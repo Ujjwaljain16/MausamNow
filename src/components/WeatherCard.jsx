@@ -2,6 +2,9 @@ import styled from '@emotion/styled';
 import { motion } from 'framer-motion';
 import { getWeatherIconUrl } from '../services/weatherService';
 import { FaTemperatureHigh, FaWind, FaCloudRain } from 'react-icons/fa';
+import { useWeather } from '../context/WeatherContext';
+import { FaStar, FaRegStar } from 'react-icons/fa';
+
 
 const Card = styled(motion.div)`
   background-color: var(--card-bg);
@@ -26,7 +29,7 @@ const CityInfo = styled.div`
     margin: 0;
     color: var(--text-primary);
   }
-  
+
   p {
     font-size: 0.875rem;
     color: var(--text-secondary);
@@ -38,14 +41,14 @@ const Temperature = styled.div`
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  
+
   h1 {
     font-size: 2.5rem;
     font-weight: 700;
     margin: 0;
     color: var(--text-primary);
   }
-  
+
   span {
     font-size: 1.5rem;
     color: var(--text-secondary);
@@ -56,12 +59,12 @@ const WeatherInfo = styled.div`
   display: flex;
   align-items: center;
   gap: 1rem;
-  
+
   img {
     width: 64px;
     height: 64px;
   }
-  
+
   p {
     font-size: 1.125rem;
     color: var(--text-primary);
@@ -85,12 +88,12 @@ const DetailItem = styled.div`
   background-color: var(--detail-bg);
   padding: 0.75rem;
   border-radius: 8px;
-  
+
   span {
     font-size: 0.875rem;
     color: var(--text-secondary);
   }
-  
+
   p {
     font-size: 1.125rem;
     font-weight: 600;
@@ -99,9 +102,12 @@ const DetailItem = styled.div`
   }
 `;
 
-const WeatherCard = ({ weatherData }) => {
+const WeatherCard = () => {
+  const { weatherData, unit , favoriteCities, toggleFavorite } = useWeather();
   if (!weatherData) return null;
   
+
+
   const {
     city,
     country,
@@ -112,7 +118,11 @@ const WeatherCard = ({ weatherData }) => {
     windSpeed,
     feelsLike
   } = weatherData;
-  
+  const isFavorite = favoriteCities.includes(city);
+
+  const unitSymbol = unit === 'metric' ? '°C' : '°F';
+  const windUnit = unit === 'metric' ? 'km/h' : 'mph';
+
   return (
     <Card
       initial={{ opacity: 0, y: 20 }}
@@ -120,26 +130,41 @@ const WeatherCard = ({ weatherData }) => {
       transition={{ duration: 0.5 }}
     >
       <CardHeader>
-        <CityInfo>
-          <h2>{city}</h2>
-          <p>{country}</p>
-        </CityInfo>
+      <CityInfo>
+  <h2 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+    {city}
+    <button
+      onClick={() => toggleFavorite(city)}
+      style={{
+        background: 'none',
+        border: 'none',
+        cursor: 'pointer',
+        padding: 0,
+      }}
+      title={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+    >
+      {isFavorite ? <FaStar color="gold" size={20} /> : <FaRegStar color="gray" size={20} />}
+    </button>
+  </h2>
+  <p>{country}</p>
+</CityInfo>
+
         <Temperature>
           <h1>{temperature}</h1>
-          <span>°C</span>
+          <span>{unitSymbol}</span>
         </Temperature>
       </CardHeader>
-      
+
       <WeatherInfo>
         <img src={getWeatherIconUrl(icon)} alt={description} />
         <p>{description}</p>
       </WeatherInfo>
-      
+
       <WeatherDetails>
         <DetailItem>
           <FaTemperatureHigh size={20} />
           <span>Feels Like</span>
-          <p>{feelsLike}°C</p>
+          <p>{feelsLike}{unitSymbol}</p>
         </DetailItem>
         <DetailItem>
           <FaCloudRain size={20} />
@@ -149,7 +174,7 @@ const WeatherCard = ({ weatherData }) => {
         <DetailItem>
           <FaWind size={20} />
           <span>Wind</span>
-          <p>{windSpeed} km/h</p>
+          <p>{windSpeed} {windUnit}</p>
         </DetailItem>
       </WeatherDetails>
     </Card>

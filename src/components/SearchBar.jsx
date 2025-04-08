@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import styled from '@emotion/styled';
 import { FaSearch } from 'react-icons/fa';
+import { useWeather } from '../context/WeatherContext';
+
 
 const SearchContainer = styled.div`
   display: flex;
@@ -50,13 +52,15 @@ const SearchButton = styled.button`
   }
 `;
 
-const SearchBar = ({ onSearch, isLoading }) => {
+const SearchBar = () => {
+  const { fetchWeatherData, loading } = useWeather();
   const [city, setCity] = useState('');
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (city.trim()) {
-      onSearch(city.trim());
+      fetchWeatherData(city.trim());
+      setCity('');  
     }
   };
 
@@ -68,10 +72,10 @@ const SearchBar = ({ onSearch, isLoading }) => {
           placeholder="Enter city name..."
           value={city}
           onChange={(e) => setCity(e.target.value)}
-          disabled={isLoading}
+          disabled={loading}
         />
-        <SearchButton type="submit" disabled={!city.trim() || isLoading}>
-          {isLoading ? 'Searching...' : <FaSearch />}
+        <SearchButton type="submit" disabled={!city.trim() || loading}>
+          {loading ? 'Searching...' : <FaSearch />}
         </SearchButton>
       </SearchContainer>
     </form>

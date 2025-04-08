@@ -3,31 +3,27 @@ import axios from 'axios';
 const API_KEY = 'f486c36c248827b9d17c606d58fea3d8';
 const BASE_URL = 'https://api.openweathermap.org/data/2.5/weather';
 
-// Convert temperature from Kelvin to Celsius
-const kelvinToCelsius = (kelvin) => {
-  return Math.round(kelvin - 273.15);
-};
+export const getWeatherData = async (city, unit = 'metric') => {
 
-// Get weather data for a specific city
-export const getWeatherData = async (city) => {
   try {
-    const response = await axios.get(`${BASE_URL}?q=${city}&appid=${API_KEY}`);
+    const response = await axios.get(`${BASE_URL}?q=${city}&appid=${API_KEY}&units=${unit}`);
+
     
     const { data } = response;
     
-    // Format the weather data
+  
     const formattedData = {
       city: data.name,
       country: data.sys.country,
-      temperature: kelvinToCelsius(data.main.temp),
-      feelsLike: kelvinToCelsius(data.main.feels_like),
+      temperature: Math.round(data.main.temp),
+      feelsLike:Math.round(data.main.feels_like),
       humidity: data.main.humidity,
       pressure: data.main.pressure,
-      windSpeed: Math.round(data.wind.speed * 3.6), // Convert m/s to km/h
+      windSpeed: Math.round(data.wind.speed * 3.6),
       description: data.weather[0].description,
       icon: data.weather[0].icon,
       main: data.weather[0].main,
-      visibility: Math.round(data.visibility / 1000), // Convert meters to kilometers
+      visibility: Math.round(data.visibility / 1000), 
       sunrise: new Date(data.sys.sunrise * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       sunset: new Date(data.sys.sunset * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       timezone: data.timezone,
@@ -44,7 +40,6 @@ export const getWeatherData = async (city) => {
   }
 };
 
-// Get weather icon URL
 export const getWeatherIconUrl = (iconCode) => {
   return `https://openweathermap.org/img/wn/${iconCode}@2x.png`;
 };
