@@ -1,7 +1,7 @@
 import styled from '@emotion/styled';
 import { motion } from 'framer-motion';
 import { FaSun, FaMoon, FaEye, FaTachometerAlt } from 'react-icons/fa';
-import { useWeather } from '../context/WeatherContext'; // ✅
+import { useWeather } from '../context/WeatherContext'; 
 
 const DetailsContainer = styled.div`
   display: grid;
@@ -112,7 +112,7 @@ const PressureCard = ({ pressure }) => (
 );
 
 const WeatherDetails = () => {
-  const { weatherData } = useWeather(); // ✅
+  const { weatherData } = useWeather(); 
   if (!weatherData) return null;
 
   const { sunrise, sunset, visibility, pressure } = weatherData;
